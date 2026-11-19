@@ -5,6 +5,7 @@ import express, {
 } from "express";
 import { Pool } from "pg";
 import dotenv from "dotenv";
+import config from "./config/index.js";
 dotenv.config();
 
 const app: Application = express();
@@ -14,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: config.connection_string
 });
 
 // initial db
@@ -176,6 +177,6 @@ app.delete("/api/v1/users/:id", async (req: Request, res: Response) => {
     }
 });
 
-app.listen(PORT, () => {
+app.listen(config.port, () => {
     console.log(`server is running ${PORT}`);
 });
