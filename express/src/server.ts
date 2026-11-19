@@ -8,13 +8,13 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app: Application = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL_POOLED,
+    connectionString: process.env.DATABASE_URL,
 });
 
 // initial db
@@ -147,32 +147,34 @@ app.put("/api/v1/users/:id", async (req: Request, res: Response) => {
     }
 });
 
-// delete api created 
+// delete api created
 
-app.delete('/api/v1/users/:id', async (req: Request, res: Response) => {
+app.delete("/api/v1/users/:id", async (req: Request, res: Response) => {
     try {
-
         const { id } = req.params;
-        const result = await pool.query(`
+        const result = await pool.query(
+            `
             DELETE FROM users WHERE id=$1
-            `, [id]);
+            `,
+            [id],
+        );
         if (result.rowCount === 0) {
             res.status(404).json({
                 success: false,
-                message: 'user not found'
-            })
+                message: "user not found",
+            });
         }
         res.status(200).json({
             success: true,
-            message: 'User Delete successfully'
-        })
-    }catch (error: any) {
+            message: "User Delete successfully",
+        });
+    } catch (error: any) {
         res.status(500).json({
             success: false,
             message: error.message,
         });
     }
-})
+});
 
 app.listen(PORT, () => {
     console.log(`server is running ${PORT}`);
