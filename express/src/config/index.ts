@@ -9,3 +9,7 @@ const config = {
     connection_string: process.env.DATABASE_URL as string,
 };
 export default config;
+
+
+
+
