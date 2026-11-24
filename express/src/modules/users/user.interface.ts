@@ -5,3 +5,5 @@ export interface IUser {
     age: number;
     is_active: boolean;
 }
+
+

@@ -1,13 +1,17 @@
+import bcrypt from "bcryptjs";
 import { pool } from "../../db";
 import type { IUser } from "./user.interface";
 
 const createUserDB = async (payload: IUser) => {
     const { name, email, password, age } = payload;
+    const hashPassword = await bcrypt.hash(password, 10);
+    console.log(hashPassword);
+
     const result = await pool.query(
         `
     INSERT INTO users (name,email,password,age) VALUES($1,$2,$3,$4) RETURNING *
             `,
-        [name, email, password, age],
+        [name, email, hashPassword, age],
     );
     return result;
 };
@@ -27,11 +31,11 @@ const getSingleUserDB = async (id: string) => {
         `,
         [id],
     );
-    return result
+    return result;
 };
 
-const updateUserDB = async (payload:Partial<IUser>, id:string) => {
-    const { name, password, age, is_active } = payload
+const updateUserDB = async (payload: Partial<IUser>, id: string) => {
+    const { name, password, age, is_active } = payload;
     const result = await pool.query(
         `
         UPDATE users SET
@@ -42,31 +46,25 @@ const updateUserDB = async (payload:Partial<IUser>, id:string) => {
         updated_at = NOW(),
         WHERE id=$5 RETURNING *
         `,
-        [
-            name ?? null,
-            password ?? null,
-            age ?? null,
-            is_active ?? null,
-            id,
-        ],
+        [name ?? null, password ?? null, age ?? null, is_active ?? null, id],
     );
     return result;
-}
+};
 
-const deleteUserDB = async (id:string) => {
+const deleteUserDB = async (id: string) => {
     const result = await pool.query(
         `
         DELETE FROM users WHERE id=$1
         `,
         [id],
     );
-    return result
-}
+    return result;
+};
 
 export const userService = {
     createUserDB,
     getAllUserDB,
     getSingleUserDB,
     updateUserDB,
-    deleteUserDB
+    deleteUserDB,
 };
