@@ -8,14 +8,12 @@ const loginUserDB = async (payload: { email: string; password: string }) => {
     // check in the password match
     // check the user status
     // if the pass then generate jwt token match
-
     const { email, password } = payload;
-
     const user = await pool.query(
         `
         SELECT * FROM users WHERE email=$1
         `,
-        [email],
+        [email],    
     );
     if (user.rowCount === 0) {
         throw new Error("Invalid Credintials");
